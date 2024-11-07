@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const BACKEND_URL = "http://localhost:3000"
-
+const WS_URL = "ws://localhost:3001"
 // describe blocks
 describe("Authentication",()=>{
     test('User is able to sign up only once', async () => {
@@ -160,6 +160,10 @@ describe("User avatar Information", () => {
         const avatarResponse  = await axios.post(`${BACKEND_URL}/api/v1/admin/avatar`,{
             "imageUrl": "https://www.clipartmax.com/png/middle/198-1988062_customize-your-avatar-with-the-roblox-girl-and-millions-roblox-character-no.png",
             "name": "Timmy"
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
         })
 
         avatarId = avatarResponse.data.avatarId;
@@ -232,7 +236,7 @@ describe("Space information", () => {
         userToken = Userresponse.data.token;
 
 
-        const element1 =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+        const element1Response =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
             "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
             "width": 1,
             "height": 1,
@@ -243,7 +247,7 @@ describe("Space information", () => {
             }
         })
 
-        const element2 =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+        const element2Response =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
             "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
             "width": 1,
             "height": 1,
@@ -254,10 +258,10 @@ describe("Space information", () => {
             }
         })
 
-        element1Id = element1.id
-        element2Id = element2.id
+        element1Id = element1Response.data.id
+        element2Id = element2Response.data.id
 
-        const map = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,{
+        const mapResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,{
             "thumbnail": "https://docs.techsoft3d.com/communicator/latest/_images/floorplan_colors.PNG",
             "dimensions": "100x200",
             "defaultElements": [{
@@ -279,7 +283,7 @@ describe("Space information", () => {
             }
         })
 
-        mapId = map.id;
+        mapId = mapResponse.data.id;
     })
 
     test('User is able to create a space', async () => {
@@ -404,7 +408,7 @@ describe("Space information", () => {
     
 })
 
-describe('Area Endpoints', () => {
+describe('Arena Endpoints', () => {
     let mapId;
     let element1Id;
     let element2Id;
@@ -453,7 +457,7 @@ describe('Area Endpoints', () => {
         userToken = Userresponse.data.token;
 
 
-        const element1 =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+        const element1Response =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
             "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
             "width": 1,
             "height": 1,
@@ -464,7 +468,7 @@ describe('Area Endpoints', () => {
             }
         })
 
-        const element2 =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+        const element2Response =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
             "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
             "width": 1,
             "height": 1,
@@ -475,10 +479,10 @@ describe('Area Endpoints', () => {
             }
         })
 
-        element1Id = element1.id
-        element2Id = element2.id
+        element1Id = element1Response.data.id
+        element2Id = element2Response.data.id
 
-        const map = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,{
+        const mapResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,{
             "thumbnail": "https://docs.techsoft3d.com/communicator/latest/_images/floorplan_colors.PNG",
             "dimensions": "100x200",
             "defaultElements": [{
@@ -500,9 +504,9 @@ describe('Area Endpoints', () => {
             }
         })
 
-        mapId = map.id;
+        mapId = mapResponse.data.id;
 
-        const space = await axios.post(`${BACKEND_URL}/api/v1/space`,{
+        const spaceResponse = await axios.post(`${BACKEND_URL}/api/v1/space`,{
             "name": "test",
             "dimensions": "100x200",
             "mapId": "mapId"
@@ -512,7 +516,7 @@ describe('Area Endpoints', () => {
             }
         })
 
-        spaceId = space.spaceId
+        spaceId = spaceResponse.data.spaceId
 
     })
 
@@ -599,7 +603,7 @@ describe('Area Endpoints', () => {
     })
 })
 
-describe('Create Elements', () => {
+describe('Admin Endpoints', () => {
     let adminToken;
     let adminId;
     let userToken;
@@ -657,7 +661,6 @@ describe('Create Elements', () => {
             }
         })
         
-        expect(elementResponse.statusCode).toBe(403)
 
         const mapResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,{
             "thumbnail": "https://docs.techsoft3d.com/communicator/latest/_images/floorplan_colors.PNG",
@@ -669,9 +672,213 @@ describe('Create Elements', () => {
             }
         })
 
-        mapId = map.id;
+        
+        const createAvatarResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/avatar`,{
+            "imageUrl": "https://www.clipartmax.com/png/middle/198-1988062_customize-your-avatar-with-the-roblox-girl-and-millions-roblox-character-no.png",
+            "name": "Timmy"
+        },{
+            headers: {
+                authorization: `Bearer ${userToken}`
+            }
+        })
 
-        const space = await axios.post(`${BACKEND_URL}/api/v1/space`,{
+
+        const updateElementResponse = await axios.put(`${BACKEND_URL}/api/v1/admin/element/123`,{
+            "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png"
+        },{
+            headers: {
+                authorization: `Bearer ${userToken}`
+            }
+        })
+
+        expect(elementResponse.statusCode).toBe(403)
+        expect(mapResponse.statusCode).toBe(403)
+        expect(createAvatarResponse.statusCode).toBe(403)
+        expect(updateElementResponse.statusCode).toBe(403)
+    })
+
+    test('Admin is able to hit admin Endpoints', async () => {
+        
+        const elementResponse =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+            "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
+            "width": 1,
+            "height": 1,
+            "static": true
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+        
+
+        const mapResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,{
+            "thumbnail": "https://docs.techsoft3d.com/communicator/latest/_images/floorplan_colors.PNG",
+            "dimensions": "100x200",
+            "defaultElements": []
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+
+        
+        const createAvatarResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/avatar`,{
+            "imageUrl": "https://www.clipartmax.com/png/middle/198-1988062_customize-your-avatar-with-the-roblox-girl-and-millions-roblox-character-no.png",
+            "name": "Timmy"
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+
+        expect(elementResponse.statusCode).toBe(200)
+        expect(mapResponse.statusCode).toBe(200)
+        expect(createAvatarResponse.statusCode).toBe(200)
+    })
+
+    test('Admin is able to update the imageUrl for an element', async () => {
+
+        const elementResponse =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+            "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
+            "width": 1,
+            "height": 1,
+            "static": true
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+
+        const updateElementResponse = await axios.put(`${BACKEND_URL}/api/v1/admin/element/${elementResponse.data.id}`,{
+            "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png"
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+
+        expect(updateElementResponse.statusCode).toBe(200)
+    })
+})
+
+describe('Web Socket Tests', () => {
+    let adminToken;
+    let adminUserId;
+    let userToken;
+    let userId;
+    let mapId;
+    let element1Id;
+    let element2Id;
+    let spaceId;
+    let ws1;
+    let ws2;
+    let ws1Messages = [];
+    let ws2Messages = [];
+    let userX;
+    let userY;
+    let adminX;
+    let adminY;
+
+    async function waitForandPopLatestMessage(messageArray) {
+        return new Promise(r =>{
+            if(messageArray.length > 0) {
+                 resolve(messageArray.shift())
+            } else {
+                let interval = setInterval(() => {
+                    if(messageArray.length > 0) {
+                        resolve(messageArray.shift())
+                        clearInterval(interval)
+                    }
+                },100)
+            }
+        })
+    }
+
+    async function setupHTTP() {
+        const username = `sandip-${Math.random()}`
+        const password = "123456"
+
+        const adminSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`,{
+            username,
+            password,
+            role: "admin"
+        })
+
+        const adminSigninResponse = await axios.post(`${BACKEND_URL}/api/v1/signin`,{
+            username,
+            password
+        })
+
+        adminUserId = adminSignupResponse.data.userId;
+        adminToken = adminSigninResponse.data.token;
+
+
+
+
+        const userSignupResponse = await axios.post(`${BACKEND_URL}/api/v1/signup`,{
+            username: username + '-user',
+            password
+        })
+
+        const userSigninResponse = await axios.post(`${BACKEND_URL}/api/v1/signin`,{
+            username: username + '-user',
+            password
+        })
+
+        userId = userSignupResponse.data.userId;
+        userToken = userSigninResponse.data.token;
+
+
+        const element1Response =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+            "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
+            "width": 1,
+            "height": 1,
+            "static": true
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+
+        const element2Response =  await axios.post(`${BACKEND_URL}/api/v1/admin/element`,{
+            "imageUrl": "https://i.pinimg.com/originals/e7/2b/a5/e72ba56b00e8b4afe762ca053c7faa6d.png",
+            "width": 1,
+            "height": 1,
+            "static": true
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+
+        element1Id = element1Response.data.id
+        element2Id = element2Response.data.id
+
+        const mapResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/map`,{
+            "thumbnail": "https://docs.techsoft3d.com/communicator/latest/_images/floorplan_colors.PNG",
+            "dimensions": "100x200",
+            "defaultElements": [{
+                elementId: element1Id,
+                x: 20,
+                y: 20
+            },{
+                elementId: element1Id,
+                x: 18,
+                y: 20
+            },{
+                elementId: element2Id,
+                x: 19,
+                y: 20
+            }]
+        },{
+            headers: {
+                authorization: `Bearer ${adminToken}`
+            }
+        })
+
+        mapId = mapResponse.data.id;
+
+        const spaceResponse = await axios.post(`${BACKEND_URL}/api/v1/space`,{
             "name": "test",
             "dimensions": "100x200",
             "mapId": "mapId"
@@ -681,7 +888,125 @@ describe('Create Elements', () => {
             }
         })
 
-        spaceId = space.spaceId
+        spaceId = spaceResponse.data.spaceId
+    }
 
+    async function setupWs() {
+        ws1 = new WebSocket(WS_URL)
+
+        await new Promise(r => {
+            ws1.onopen = r
+        })
+
+        ws1.onmessage = (event) => {
+            ws1Messages.push(JSON.parse(event.data))
+        }
+
+        ws2 = new WebSocket(WS_URL)
+
+        await new Promise(r => {
+            ws2.onopen = r
+        })
+
+        ws2.onmessage = (event) => {
+            ws2Messages.push(JSON.parse(event.data))
+        }
+    }
+
+    beforeAll(async () => {
+        setupHTTP()
+        setupWs()
+    })
+
+    test('Get back ack for joining the space',async () => {
+
+        ws1.send(JSON.stringify({
+            "type": "join",
+            "payload": {
+                "spaceId": spaceId,
+                "token": adminToken
+            }
+        }))
+        const message1 = await waitForandPopLatestMessage(ws1Messages)
+
+        ws2.send(JSON.stringify({
+            "type": "join",
+            "payload": {
+                "spaceId": spaceId,
+                "token": userToken
+            }
+        }))
+
+        const message2 = await waitForandPopLatestMessage(ws2Messages)
+        const message3 = await waitForandPopLatestMessage(ws1Messages)
+
+        expect(message1.type).toBe("space-joined")
+        expect(message2.type).toBe("space-joined")
+        expect(message1.payload.users.length).toBe(0)
+        expect(message2.payload.users.length).toBe(1)
+        expect(message3.type).toBe("user-join")
+        expect(message3.payload.x).toBe(message2.payload.spawn.x)
+        expect(message3.payload.y).toBe(message3.payload.spawn.y)
+        expect(message3.payload.userId).toBe(userId)
+
+        adminX = message1.payload.spawn.x;
+        adminY = message1.payload.spawn.y;
+
+        userX = message2.payload.spawn.x;
+        userY = message2.payload.spawn.y;
+
+    })
+
+    test('User should not be able to move across the boundary of the wall',async () => {
+        ws1.send(JSON.stringify({
+            type: "movement",
+            payload: {
+                x: 100000,
+                y: 10000
+            }
+        }))
+
+        const message = await waitForandPopLatestMessage(ws1Messages)
+        expect(message.type).toBe("movement-rejected")
+        expect(message.payload.x).toBe(adminX)
+        expect(message.payload.y).toBe(adminY)
+    })
+
+    test('User should not be able to move two blocks at the same time',async () => {
+        ws1.send(JSON.stringify({
+            type: "movement",
+            payload: {
+                x: adminX + 2,
+                y: adminY
+            }
+        }))
+
+        const message = await waitForandPopLatestMessage(ws1Messages)
+        expect(message.type).toBe("movement-rejected")
+        expect(message.payload.x).toBe(adminX)
+        expect(message.payload.y).toBe(adminY)
+    })
+
+    test('User should be able to move and broadcasted to other users',async () => {
+        ws1.send(JSON.stringify({
+            type: "movement",
+            payload: {
+                x: adminX + 1,
+                y: adminY,
+                userId: adminUserId
+            }
+        }))
+
+        const message = await waitForandPopLatestMessage(ws2Messages)
+        expect(message.type).toBe("movement")
+        expect(message.payload.x).toBe(adminX + 1)
+        expect(message.payload.y).toBe(adminY)
+    })
+
+    test('If a user leaves it should be shown to other users',async () => {
+        ws1.close()
+        const message = await waitForandPopLatestMessage(ws2Messages)
+        expect(message.type).toBe("user-left")
+        expect(message.payload.userId).toBe(adminUserId)
     })
 })
